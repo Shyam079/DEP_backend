@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/auth.config');
 // const refreshConfig = require('../config/refresh.config');
 const db = require('../models');
-const Role = db.role;
+// const Role = db.role;
 const User = db.user;
 
 verifyToken =(req,res,next) =>{
@@ -51,27 +51,11 @@ isAdmin = (req,res,next) =>{
         res.status(500).send({message:err});
         return;
         }
-
-        Role.find(
-            {
-                _id:{$in:user.roles}   
-            },
-            (err,roles) =>{
-                if(err){
-                    res.status(500).send({message:err.message});
-                    return;
-                }
-                for(let i=0;i<roles.length;i++){
-                    if(roles[i].name ==='admin'){
-                        next();
-                        return;
-                    }
-                }
-        
-                res.status(403).send({message:"Require admin role"});
-                return;
-                }
-            )
+        if(user.roles ==='admin'){
+            next();
+            return;
+        }
+        res.status(403).send({message:"Require admin role"});
     }) 
 }
 
@@ -82,27 +66,15 @@ isModerator = (req,res,next) =>{
         res.status(500).send({message:err});
         return;
         }
-    Role.find(
-    {
-        _id:{$in:user.roles}   
-    },
-    (err,roles) =>{
         if(err){
             res.status(500).send({message:err});
             return;
-        }
-        
-        for(let i=0;i<roles.length;i++){
-            if(roles[i].name ==='moderator'){
+            }
+            if(user.roles ==='moderator'){
                 next();
                 return;
             }
-        }
-
-        res.status(403).send({message:"Require moderator role"});
-        return;
-        }
-      );
+            res.status(403).send({message:"Require moderator role"});
     });
 }
 

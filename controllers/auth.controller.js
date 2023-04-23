@@ -19,46 +19,14 @@ exports.signup = (req, res) => {
       res.status(500).send({ message: err });
       return;
     }
-
-    if (req.body.roles) {
-      Role.find(
-        {
-          name: { $in: req.body.roles }
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-
-          user.roles = roles.map(role => role._id);
-          user.save(err => {
-            if (err) {
-              res.status(500).send({ message: err });
-              return;
-            }
-
-            res.send({ message: "User was registered successfully!" });
-          });
-        }
-      );
-    } else {
-      Role.findOne({ name: "user" }, (err, role) => {
-        if (err) {
-          res.status(500).send({ message: err });
-          return;
-        }
-
-        user.roles = [role._id];
-        user.save(err => {
-          if (err) {
-            res.status(500).send({ message: err });
-            return;
-          }
-
-          res.send({ message: "User was registered successfully!" });
-        });
-      });
+    if(req.body.roles === 'user'){
+      res.send({ message: "User was registered successfully!" });
+    }
+    else if(req.body.roles === 'moderator'){
+      res.send({ message: "Moderator was registered successfully!" });
+    }
+    else if(req.body.roles==='admin'){
+      res.send({ message: "Admin was registered successfully!" });
     }
   });
 };
@@ -67,7 +35,6 @@ exports.signin = (req, res) => {
   User.findOne({
     email: req.body.email
   })
-    .populate("roles", "-__v")
     .exec((err, user) => {
       if (err) {
         res.status(500).send({ message: err });
@@ -99,16 +66,12 @@ exports.signin = (req, res) => {
       var refreshToken = jwt.sign({ id: user.id }, refreshConfig.secret,{
         expiresIn: '7d'
       });
-
-
-      var authorities = user.roles.map((role) => `ROLE_${role.name.toUpperCase()}`)
-
       res.status(200).send({
         id: user._id,
         fname: user.firstName,
         lname: user.lastName,
         email: user.email,
-        roles: authorities,
+        roles: user.roles,
         accessToken: token,
         refreshToken: refreshToken
       });

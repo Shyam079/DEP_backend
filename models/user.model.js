@@ -8,12 +8,7 @@ mongoose.Schema({
     email:String,
     password:String,
     profilePic:String,
-    roles:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Role"
-        }
-    ]
+    roles:String
     
 },{strict:false}
 ));

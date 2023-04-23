@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const db = require('./models');
 const Role = require('./models/role.model');
@@ -30,7 +31,6 @@ db.mongoose
   app.listen(PORT, () => {
     console.log("BE started on port " + PORT);
   });
-  initial();
 })
 .catch((err)=>{
   console.log(`connection error: ${err.message}`);
@@ -44,25 +44,23 @@ app.get('/', (req, res) => {
   req.json({message:"Welcome to my API", status:200, message_type:"success"})
 })
 
-require('./routes/admin.routes')(app);
+// require('./routes/admin.routes')(app);
 require('./routes/auth.routes')(app);
 require('./routes/user.routes')(app);
 
+const newAdmin = new db.user({
+  firstName: "dishant",
+  lastName: "patil",
+  email: "patildishant@gmail.com",
+  password: bcrypt.hashSync("sp2114", 8),
+  profilePic: "",
+  roles: "moderator",
+});
 
-//creating all roles
-
-const  initial= async() => {
-  try{
-    const count = await Role.estimatedDocumentCount();
-    if(count === 0){
-      await Promise.all([
-      new Role({name:"admin"}).save(),
-      new Role({name:"user"}).save(),
-      new Role({name:"moderator"}).save(),
-      ]);
-      console.log('Roles Created');
-  } 
-  } catch(err){
-    console.error('Error in creating roles', err);
-  }
-}
+newAdmin.save(function(err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("New admin saved to database.");
+  }
+});
