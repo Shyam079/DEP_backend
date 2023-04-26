@@ -4,3 +4,8 @@
 
 [dev]
   command = "npm run start"
+  
+[[redirects]]
+  from = "/*"
+  to = "/index.js"
+  status = 200
