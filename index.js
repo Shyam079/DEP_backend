@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const db = require('./models');
 const Role = require('./models/role.model');
+const serverless = require('serverless-http');
 // const ROLE = db.role;
 
 // const dbConfig = require('./config/db.config');
@@ -45,8 +46,8 @@ app.get('/', (req, res) => {
 })
 
 // require('./routes/admin.routes')(app);
-require('./routes/auth.routes')(app);
-require('./routes/user.routes')(app);
+require('./routes/auth.routes')(serverless(app));
+require('./routes/user.routes')(serverless(app));
 
 const newAdmin = new db.user({
   firstName: "dishant",
