@@ -29,7 +29,7 @@ db.mongoose
 })
 .then(()=>{
   console.log('MongoDB Connected');
-  app.listen(PORT, () => {
+  serverless(app).listen(PORT, () => {
     console.log("BE started on port " + PORT);
   });
 })
@@ -46,8 +46,8 @@ app.get('/', (req, res) => {
 })
 
 // require('./routes/admin.routes')(app);
-require('./routes/auth.routes')(serverless(app));
-require('./routes/user.routes')(serverless(app));
+require('./routes/auth.routes')(app);
+require('./routes/user.routes')(app);
 
 const newAdmin = new db.user({
   firstName: "dishant",
